@@ -1,109 +1,41 @@
+import base64
+from io import BytesIO
 from flask import Flask, render_template, request
 import qrcode
-import sqlite3
-import os
 
 app = Flask(__name__)
-
-os.makedirs("static/qr", exist_ok=True)
-
-DB = "database.db"
-
-
-def inicializar_db():
-    conn = sqlite3.connect(DB)
-
-    conn.execute("""
-    CREATE TABLE IF NOT EXISTS historial(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        contenido TEXT
-    )
-    """)
-
-    conn.commit()
-    conn.close()
-
-
-inicializar_db()
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-
-    qr_generado = None
+    qr_base64 = None
+    user_input = ""
 
     if request.method == "POST":
+        user_input = request.form.get("texto_url", "").strip()
 
-        accion = request.form.get("accion")
-
-        if accion == "texto":
-
-            contenido = request.form.get("contenido")
-
-            if contenido:
-
-                img = qrcode.make(contenido)
-
-                ruta = "static/qr/ultimo_qr.png"
-
-                img.save(ruta)
-
-                conn = sqlite3.connect(DB)
-
-                conn.execute(
-                    "INSERT INTO historial(contenido) VALUES(?)",
-                    (contenido,)
-                )
-
-                conn.commit()
-                conn.close()
-
-                qr_generado = ruta
-
-        if accion == "wifi":
-
-            ssid = request.form.get("ssid")
-            password = request.form.get("password")
-
-            wifi_data = (
-                f"WIFI:T:WPA;"
-                f"S:{ssid};"
-                f"P:{password};;"
+        if user_input:
+            # Configuración y generación del código QR
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
             )
+            qr.add_data(user_input)
+            qr.make(fit=True)
 
-            img = qrcode.make(wifi_data)
+            img = qr.make_image(fill_color="black", back_color="white")
 
-            ruta = "static/qr/wifi_qr.png"
+            # Guardar la imagen en un buffer de memoria BytesIO
+            buffered = BytesIO()
+            img.save(buffered, format="PNG")
 
-            img.save(ruta)
-
-            conn = sqlite3.connect(DB)
-
-            conn.execute(
-                "INSERT INTO historial(contenido) VALUES(?)",
-                (f"WiFi: {ssid}",)
-            )
-
-            conn.commit()
-            conn.close()
-
-            qr_generado = ruta
-
-    conn = sqlite3.connect(DB)
-
-    historial = conn.execute("""
-        SELECT contenido
-        FROM historial
-        ORDER BY id DESC
-        LIMIT 20
-    """).fetchall()
-
-    conn.close()
+            # Convertir la imagen a base64 para enviarla al HTML
+            qr_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
     return render_template(
-        "index.html",
-        qr_generado=qr_generado,
-        historial=historial
+        "index.html", qr_code=qr_base64, original_text=user_input
     )
 
 
