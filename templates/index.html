@@ -1,230 +1,95 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<title>QR PRO Web</title>
-
-https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css
-
-<style>
+    <title>QR PRO Web</title>
 
 
-
-:root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --border: #334155;
-    --text: #f8fafc;
-    --primary: #3b82f6;
-    --success: #22c55e;
-    --warning: #f59e0b;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:Segoe UI, sans-serif;
-    min-height:100vh;
-}
-
-.container{
-    max-width:1000px;
-}
-
-.card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:16px;
-}
-
-h1{
-    font-weight:700;
-    margin-bottom:30px;
-}
-
-h4{
-    margin-bottom:20px;
-}
-
-.form-control{
-    background:#0f172a;
-    border:1px solid var(--border);
-    color:white;
-}
-
-.form-control:focus{
-    background:#0f172a;
-    color:white;
-    border-color:var(--primary);
-    box-shadow:none;
-}
-
-.btn-success{
-    background:var(--success);
-    border:none;
-}
-
-.btn-warning{
-    border:none;
-}
-
-.qr-container{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:20px;
-}
-
-.qr-container img{
-    width:100%;
-    max-width:280px;
-    border-radius:12px;
-    background:white;
-    padding:10px;
-}
-
-.historial{
-    padding-left:15px;
-}
-
-.historial li{
-    margin-bottom:8px;
-    color:#cbd5e1;
-}
-
-footer{
-    margin-top:40px;
-    text-align:center;
-    opacity:0.6;
-    font-size:14px;
-}
-
-@media(max-width:768px){
-
-    h1{
-        font-size:28px;
-        text-align:center;
-    }
-
-    .card{
-        padding:20px !important;
-    }
-
-    .btn{
-        width:100%;
-    }
-
-}
-
-
-</style>
+ estilos.css
 
 </head>
 
 <body>
 
-<div class="container mt-5">
+    <div class="contenedor">
 
-<h1 class="mb-4">
-Creador QR PRO WEB
-</h1>
+        <h1 class="mb-4">
+            Generador QR PRO WEB
+        </h1>
 
-<div class="card p-4 mb-4">
+        <div class="div1">
 
-<h4>Generar QR</h4>
+            <h4>Generar QR</h4>
 
-<form method="POST">
+            <form method="POST">
 
-<input
-type="hidden"
-name="accion"
-value="texto">
+                <input type="hidden" name="accion" value="texto">
 
-<input
-class="form-control"
-name="contenido"
-placeholder="Texto o URL">
+                <input class="form-control" name="contenido" placeholder="Texto o URL">
 
-<br>
+                <br>
 
-<button
-class="btn btn-success">
-Generar QR
-</button>
+                <button class="btnqr">
+                    Generar QR
+                </button>
 
-</form>
+            </form>
 
-</div>
+        </div>
 
-<div class="card p-4 mb-4">
+        <div class="div2">
 
-<h4>Generar QR WiFi</h4>
+            <h4>Generar QR WiFi</h4>
 
-<form method="POST">
+            <form method="POST">
 
-<input
-type="hidden"
-name="accion"
-value="wifi">
+                <input type="hidden" name="accion" value="wifi">
 
-<input
-class="form-control"
-name="ssid"
-placeholder="SSID">
+                <input class="form-control" name="ssid" placeholder="SSID">
 
-<br>
+                <br>
 
-<input
-class="form-control"
-name="password"
-placeholder="Contraseña">
+                <input class="form-control" name="password" placeholder="Contraseña">
 
-<br>
+                <br>
 
-<button
-class="btn btn-warning">
-Generar QR WiFi
-</button>
+                <button class="btnqrwifi">
+                    Generar QR WiFi
+                </button>
 
-</form>
+            </form>
 
-</div>
+        </div>
 
-{% if qr_generado %}
+        {% if qr_generado %}
 
-<div class="card p-4">
+        <div class="card p-4">
 
-<h4>QR Generado</h4>
+            <h4>QR Generado</h4>
 
-<img srcenerado }}
+            <img srcenerado }} </div>
 
-</div>
+            {% endif %}
 
-{% endif %}
+            <hr>
 
-<hr>
+            <h3>Historial</h3>
 
-<h3>Historial</h3>
+            <ul>
 
-<ul>
+                {% for item in historial %}
 
-{% for item in historial %}
+                <li>{{ item[0] }}</li>
 
-<li>{{ item[0] }}</li>
+                {% endfor %}
 
-{% endfor %}
+            </ul>
 
-</ul>
-
-</div>
+    </div>
 
 </body>
+
 </html>
