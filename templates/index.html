@@ -1,90 +1,71 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR PRO Web</title>
-
-
-<link rel="stylesheet" href="estilos.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Códigos QR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        input[type="text"] {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .qr-result {
+            margin-top: 20px;
+        }
+        .qr-result img {
+            max-width: 200px;
+        }
+    </style>
 </head>
-
 <body>
 
-    <div class="contenedor">
+<div class="container">
+    <h2>Generador de Código QR</h2>
+    <form method="POST">
+        <input type="text" name="texto_url" placeholder="Ingresa un texto o URL..." value="{{ original_text }}" required>
+        <br>
+        <button type="submit">Generar QR</button>
+    </form>
 
-        <h1 class="mb-4">
-            Generador QR PRO WEB
-        </h1>
-
-        <div class="div1">
-
-            <h4>Generar QR</h4>
-
-            <form method="POST">
-
-                <input type="hidden" name="accion" value="texto">
-
-                <input class="form-control" name="contenido" placeholder="Texto o URL">
-
-                <br>
-
-                <button class="btnqr">
-                    Generar QR
-                </button>
-
-            </form>
-
-        </div>
-
-        <div class="div2">
-
-            <h4>Generar QR WiFi</h4>
-
-            <form method="POST">
-
-                <input type="hidden" name="accion" value="wifi">
-
-                <input class="form-control" name="ssid" placeholder="SSID">
-
-                <br>
-
-                <input class="form-control" name="password" placeholder="Contraseña">
-
-                <br>
-
-                <button class="btnqrwifi">
-                    Generar QR WiFi
-                </button>
-
-            </form>
-
-        </div>
-
-  {% if qr_generado %}
-    <h2>QR generado</h2>
-    {{ qr_generado }}
-{% endif %}
-
-            <hr>
-
-            <h3>Historial</h3>
-
-            <ul>
-
-                {% for item in historial %}
-
-                <li>{{ item[0] }}</li>
-
-                {% endfor %}
-
-            </ul>
-
+    {% if qr_code %}
+    <div class="qr-result">
+        <h3>Tu Código QR:</h3>
+        <img src="data:image/png;base64,{{ qr_code }}" alt="Código QR">
     </div>
+    {% endif %}
+</div>
 
 </body>
-
 </html>
