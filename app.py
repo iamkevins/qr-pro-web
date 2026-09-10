@@ -15,7 +15,6 @@ def index():
         user_input = request.form.get("texto_url", "").strip()
 
         if user_input:
-            # Configuración y generación del código QR
             qr = qrcode.QRCode(
                 version=1,
                 error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -27,11 +26,9 @@ def index():
 
             img = qr.make_image(fill_color="black", back_color="white")
 
-            # Guardar la imagen en un buffer de memoria BytesIO
             buffered = BytesIO()
             img.save(buffered, format="PNG")
 
-            # Convertir la imagen a base64 para enviarla al HTML
             qr_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
     return render_template(
