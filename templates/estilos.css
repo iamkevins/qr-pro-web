@@ -1,0 +1,12 @@
+       body {
+            background: #121212;
+            color: white;
+        }
+
+        .card {
+            background: #1e1e1e;
+        }
+
+        img {
+            max-width: 300px;
+        }
