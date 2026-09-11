@@ -13,6 +13,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
         .container {
             background: white;
@@ -20,17 +21,52 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            max-width: 400px;
-            width: 96%;
+            max-width: 420px;
+            width: 100%;
             box-sizing: border-box;
         }
-        input[type="text"] {
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+        .form-group {
+            display: none;
+            text-align: left;
+        }
+        .form-group.active {
+            display: block;
+        }
+        label {
+            font-size: 13px;
+            color: #333;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="password"], select {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
+            font-size: 14px;
         }
         .btn {
             display: inline-block;
@@ -41,6 +77,7 @@
             cursor: pointer;
             text-decoration: none;
             font-size: 14px;
+            box-sizing: border-box;
         }
         .btn-submit {
             background-color: #007bff;
@@ -52,6 +89,7 @@
         .btn-download {
             background-color: #28a745;
             margin-top: 15px;
+            width: 100%;
         }
         .btn-download:hover {
             background-color: #218838;
@@ -66,39 +104,83 @@
             border-radius: 5px;
             background: #fff;
         }
-        /* Estilos para celulares */
-        @media (max-width: 600px) {
-               body {
-                  flex-direction: column;
-                justify-content:  flex-start;
-                padding-top: 20%;
-            }
-         
-        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Generador de Código QR</h2>
-    <form method="POST">
-        <input type="text" name="texto_url" placeholder="Ingresa un texto o URL..." value="{{ original_text }}" required>
+
+    <!-- Pestañas para seleccionar la opción -->
+    <div class="tabs">
+        <button type="button" class="tab-btn {% if modo_activo == 'texto' %}active{% endif %}" onclick="cambiarModo('texto')">Texto / URL</button>
+        <button type="button" class="tab-btn {% if modo_activo == 'wifi' %}active{% endif %}" onclick="cambiarModo('wifi')">Red WiFi</button>
+    </div>
+
+    <form method="POST" id="qr-form">
+        <input type="hidden" name="modo" id="input-modo" value="{{ modo_activo }}">
+
+        <!-- Formulario Texto / URL -->
+        <div id="grupo-texto" class="form-group {% if modo_activo == 'texto' %}active{% endif %}">
+            <label for="texto_url">Texto o enlace URL:</label>
+            <input type="text" id="texto_url" name="texto_url" placeholder="https://ejemplo.com" value="{{ texto_url }}">
+        </div>
+
+        <!-- Formulario WiFi -->
+        <div id="grupo-wifi" class="form-group {% if modo_activo == 'wifi' %}active{% endif %}">
+            <label for="ssid">Nombre de la red (SSID):</label>
+            <input type="text" id="ssid" name="ssid" placeholder="MiRedWiFi" value="{{ ssid }}">
+
+            <label for="password">Contraseña de WiFi:</label>
+            <input type="password" id="password" name="password" placeholder="Contraseña..." value="{{ password }}">
+
+            <label for="seguridad">Tipo de Seguridad:</label>
+            <select id="seguridad" name="seguridad">
+                <option value="WPA" {% if seguridad == 'WPA' %}selected{% endif %}>WPA / WPA2 / WPA3</option>
+                <option value="WEP" {% if seguridad == 'WEP' %}selected{% endif %}>WEP</option>
+                <option value="nopass" {% if seguridad == 'nopass' %}selected{% endif %}>Sin Contraseña</option>
+            </select>
+        </div>
+
         <button type="submit" class="btn btn-submit">Generar QR</button>
     </form>
 
+    <!-- Resultado del QR y botón de descarga reutilizado -->
     {% if qr_code %}
     <div class="qr-result">
         <h3>Tu Código QR:</h3>
-        <!-- Muestra la imagen generada -->
         <img src="data:image/png;base64,{{ qr_code }}" alt="Código QR">
         <br>
-        <!-- Botón para descargar el código QR -->
         <a href="data:image/png;base64,{{ qr_code }}" download="codigo_qr.png" class="btn btn-download">
             Descargar Código QR
         </a>
     </div>
     {% endif %}
 </div>
+
+<script>
+    function cambiarModo(modo) {
+        document.getElementById('input-modo').value = modo;
+
+        // Pestañas
+        const btns = document.querySelectorAll('.tab-btn');
+        btns[0].classList.toggle('active', modo === 'texto');
+        btns[1].classList.toggle('active', modo === 'wifi');
+
+        // Formularios
+        document.getElementById('grupo-texto').classList.toggle('active', modo === 'texto');
+        document.getElementById('grupo-wifi').classList.toggle('active', modo === 'wifi');
+
+        // Requerir campos según el modo
+        document.getElementById('texto_url').required = (modo === 'texto');
+        document.getElementById('ssid').required = (modo === 'wifi');
+    }
+
+    // Inicializar 'required' según el modo actual
+    document.addEventListener("DOMContentLoaded", function() {
+        cambiarModo("{{ modo_activo }}");
+    });
+</script>
 
 </body>
 </html>
