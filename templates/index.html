@@ -1,195 +1,401 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Códigos QR</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 80vh;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 460px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #eee;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            background: none;
-            border: none;
-            font-size: 15px;
-            font-weight: bold;
-            color: #666;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-        }
-        .tab-btn.active {
-            color: #007bff;
-            border-bottom-color: #007bff;
-        }
-        .form-group {
-            display: none;
-            text-align: left;
-        }
-        .form-group.active {
-            display: block;
-        }
-        label {
-            font-size: 13px;
-            color: #333;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="text"], input[type="password"], select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-        .btn-submit {
-            background-color: #007bff;
-            width: 100%;
-        }
-        .btn-submit:hover {
-            background-color: #0056b3;
-        }
-        .btn-download {
-            background-color: #28a745;
-            margin-top: 15px;
-            width: 100%;
-        }
-        .btn-download:hover {
-            background-color: #218838;
-        }
-        .qr-result {
-            margin-top: 25px;
-        }
-        .qr-result img {
-            max-width: 220px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-            background: #fff;
-        }
-         @media (max-width: 600px) {
-               body {
-               flex-direction: column;
-                justify-content:  flex-start;
-                margin-top: 8%;
-                margin-bottom: 8%;
-               min-height: 50vh;
-            }
-         
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Códigos QR</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f4f4f9;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:80vh;
+    padding:20px;
+}
+
+.container{
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,.1);
+    text-align:center;
+    max-width:550px;
+    width:100%;
+}
+
+.tabs{
+    display:flex;
+    margin-bottom:20px;
+    border-bottom:2px solid #eee;
+}
+
+.tab-btn{
+    flex:1;
+    padding:10px;
+    border:none;
+    background:none;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.tab-btn.active{
+    color:#007bff;
+    border-bottom:3px solid #007bff;
+}
+
+.form-group{
+    display:none;
+    text-align:left;
+}
+
+.form-group.active{
+    display:block;
+}
+
+input[type=text],
+input[type=password],
+input[type=file],
+select{
+    width:100%;
+    padding:10px;
+    margin-bottom:15px;
+    box-sizing:border-box;
+}
+
+.btn{
+    padding:10px 20px;
+    border:none;
+    border-radius:5px;
+    color:white;
+    cursor:pointer;
+}
+
+.btn-submit{
+    width:100%;
+    background:#007bff;
+}
+
+.btn-download{
+    display:inline-block;
+    margin-top:15px;
+    background:#28a745;
+    text-decoration:none;
+}
+
+.qr-result{
+    margin-top:20px;
+}
+
+.qr-result img{
+    max-width:220px;
+}
+
+.preview{
+    margin-top:15px;
+}
+
+.preview img{
+    max-width:100%;
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <h2>Generador de Código QR</h2>
 
-    <!-- Pestañas para seleccionar la opción -->
-    <div class="tabs">
-        <button type="button" class="tab-btn {% if modo_activo == 'texto' %}active{% endif %}" onclick="cambiarModo('texto')">Texto / URL</button>
-        <button type="button" class="tab-btn {% if modo_activo == 'wifi' %}active{% endif %}" onclick="cambiarModo('wifi')">Red WiFi</button>
-    </div>
+<h2>Generador de Código QR</h2>
 
-    <form method="POST" id="qr-form">
-        <input type="hidden" name="modo" id="input-modo" value="{{ modo_activo }}">
+<div class="tabs">
 
-        <!-- Formulario Texto / URL -->
-        <div id="grupo-texto" class="form-group {% if modo_activo == 'texto' %}active{% endif %}">
-            <label for="texto_url">Texto o enlace URL:</label>
-            <input type="text" id="texto_url" name="texto_url" placeholder="https://ejemplo.com" value="{{ texto_url }}">
-        </div>
+<button
+type="button"
+class="tab-btn {% if modo_activo == 'texto' %}active{% endif %}"
+onclick="cambiarModo('texto')">
+Texto / URL
+</button>
 
-        <!-- Formulario WiFi -->
-        <div id="grupo-wifi" class="form-group {% if modo_activo == 'wifi' %}active{% endif %}">
-            <label for="ssid">Nombre de la red (SSID):</label>
-            <input type="text" id="ssid" name="ssid" placeholder="MiRedWiFi" value="{{ ssid }}">
+<button
+type="button"
+class="tab-btn {% if modo_activo == 'wifi' %}active{% endif %}"
+onclick="cambiarModo('wifi')">
+WiFi
+</button>
 
-            <label for="password">Contraseña de WiFi:</label>
-            <input type="password" id="password" name="password" placeholder="Contraseña..." value="{{ password }}">
+<button
+type="button"
+class="tab-btn {% if modo_activo == 'archivo' %}active{% endif %}"
+onclick="cambiarModo('archivo')">
+Archivo
+</button>
 
-            <label for="seguridad">Tipo de Seguridad:</label>
-            <select id="seguridad" name="seguridad">
-                <option value="WPA" {% if seguridad == 'WPA' %}selected{% endif %}>WPA / WPA2 / WPA3</option>
-                <option value="WEP" {% if seguridad == 'WEP' %}selected{% endif %}>WEP</option>
-                <option value="nopass" {% if seguridad == 'nopass' %}selected{% endif %}>Sin Contraseña</option>
-            </select>
-        </div>
+</div>
 
-        <button type="submit" class="btn btn-submit">Generar QR</button>
-    </form>
+<form
+method="POST"
+enctype="multipart/form-data">
 
-    <!-- Resultado del QR y botón de descarga reutilizado -->
-    {% if qr_code %}
-    <div class="qr-result">
-        <h3>Tu Código QR:</h3>
-        <img src="data:image/png;base64,{{ qr_code }}" alt="Código QR">
-        <br>
-        <a href="data:image/png;base64,{{ qr_code }}" download="codigo_qr.png" class="btn btn-download">
-            Descargar Código QR
-        </a>
-    </div>
-    {% endif %}
+<input
+type="hidden"
+name="modo"
+id="input-modo"
+value="{{ modo_activo }}">
+
+<div
+id="grupo-texto"
+class="form-group {% if modo_activo == 'texto' %}active{% endif %}">
+
+<label>Texto o URL</label>
+
+<input
+type="text"
+id="texto_url"
+name="texto_url"
+value="{{ texto_url }}"
+placeholder="https://ejemplo.com">
+
+</div>
+
+<div
+id="grupo-wifi"
+class="form-group {% if modo_activo == 'wifi' %}active{% endif %}">
+
+<label>SSID</label>
+
+<input
+type="text"
+id="ssid"
+name="ssid"
+value="{{ ssid }}">
+
+<label>Contraseña</label>
+
+<input
+type="password"
+id="password"
+name="password"
+value="{{ password }}">
+
+<label>Seguridad</label>
+
+<select
+id="seguridad"
+name="seguridad">
+
+<option value="WPA">WPA/WPA2/WPA3</option>
+
+<option value="WEP">WEP</option>
+
+<option value="nopass">Sin contraseña</option>
+
+</select>
+
+</div>
+
+<div
+id="grupo-archivo"
+class="form-group {% if modo_activo == 'archivo' %}active{% endif %}">
+
+<label>PDF o Imagen</label>
+
+<input
+type="file"
+id="archivo"
+name="archivo"
+accept=".pdf,.png,.jpg,.jpeg">
+
+<div
+id="preview"
+class="preview">
+</div>
+
+</div>
+
+<button
+type="submit"
+class="btn btn-submit">
+
+Generar QR
+
+</button>
+
+</form>
+
+{% if qr_code %}
+
+<div class="qr-result">
+
+<h3>Tu Código QR</h3>
+
+data:image/png;base64,{{ qr_code }}
+
+<br>
+
+data:image/png;base64,{{ qr_code }}
+
+Descargar QR
+
+</a>
+
+</div>
+
+{% endif %}
+
+{% if archivo_subido %}
+
+<hr>
+
+<h3>Vista previa del archivo</h3>
+
+{% if archivo_subido.endswith('.pdf') %}
+
+ }}"
+width="100%"
+height="500">
+</iframe>
+
+{% else %}
+
+ }}"
+style="max-width:100%;">
+
+{% endif %}
+
+{% endif %}
+
 </div>
 
 <script>
-    function cambiarModo(modo) {
-        document.getElementById('input-modo').value = modo;
 
-        // Pestañas
-        const btns = document.querySelectorAll('.tab-btn');
-        btns[0].classList.toggle('active', modo === 'texto');
-        btns[1].classList.toggle('active', modo === 'wifi');
+function cambiarModo(modo){
 
-        // Formularios
-        document.getElementById('grupo-texto').classList.toggle('active', modo === 'texto');
-        document.getElementById('grupo-wifi').classList.toggle('active', modo === 'wifi');
+document.getElementById(
+    "input-modo"
+).value = modo;
 
-        // Requerir campos según el modo
-        document.getElementById('texto_url').required = (modo === 'texto');
-        document.getElementById('ssid').required = (modo === 'wifi');
-    }
+document
+.getElementById(
+    "grupo-texto"
+).classList.toggle(
+    "active",
+    modo==="texto"
+);
 
-    // Inicializar 'required' según el modo actual
-    document.addEventListener("DOMContentLoaded", function() {
-        cambiarModo("{{ modo_activo }}");
-    });
+document
+.getElementById(
+    "grupo-wifi"
+).classList.toggle(
+    "active",
+    modo==="wifi"
+);
+
+document
+.getElementById(
+    "grupo-archivo"
+).classList.toggle(
+    "active",
+    modo==="archivo"
+);
+
+document
+.querySelectorAll(
+    ".tab-btn"
+)
+.forEach(
+    b=>b.classList.remove(
+        "active"
+    )
+);
+
+if(modo==="texto")
+document
+.querySelectorAll(
+".tab-btn"
+)[0]
+.classList.add(
+"active"
+);
+
+if(modo==="wifi")
+document
+.querySelectorAll(
+".tab-btn"
+)[1]
+.classList.add(
+"active"
+);
+
+if(modo==="archivo")
+document
+.querySelectorAll(
+".tab-btn"
+)[2]
+.classList.add(
+"active"
+);
+
+}
+
+document
+.getElementById(
+"archivo"
+)
+.addEventListener(
+"change",
+function(e){
+
+const file =
+e.target.files[0];
+
+const preview =
+document.getElementById(
+"preview"
+);
+
+preview.innerHTML = "";
+
+if(!file){
+return;
+}
+
+const url =
+URL.createObjectURL(
+file
+);
+
+if(
+file.type===
+"application/pdf"
+){
+
+preview.innerHTML =
+`
+<iframe
+src="${url}"
+width="100%"
+height="400">
+</iframe>
+`;
+
+}else{
+
+preview.innerHTML =
+`
+<img
+src="${url}"
+style="max-width:100%;">
+`;
+
+}
+
+}
+);
+
 </script>
 
 </body>
