@@ -19,17 +19,14 @@
 
     
             background: linear-gradient(
-                -45deg,
-                #8a2be2,
-                #00cfff,
-                #00ff99,
-                #ff9f1c,
-                #ff4fd8,
-                #4d7cff
-         );
+radial-gradient(circle at top left, #ff4fd8 0%, transparent 35%),
+radial-gradient(circle at top right, #00e5ff 0%, transparent 35%),
+radial-gradient(circle at bottom left, #00ff99 0%, transparent 35%),
+radial-gradient(circle at bottom right, #ff9f1c 0%, transparent 35%),
+linear-gradient(135deg, #2b1055, #1a1f71);
         
             background-size: 400% 400%;
-            animation: gradientMove 15s ease infinite;
+            animation: gradientMove 25s ease infinite;
         }
 
         @keyframes gradientMove {
