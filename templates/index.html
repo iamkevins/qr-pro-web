@@ -237,7 +237,7 @@ background-size: 100% 100%;
         <!-- Sección 2: WiFi -->
         <div id="grupo-wifi" class="form-group {% if modo_activo == 'wifi' %}active{% endif %}">
             <label for="ssid">Nombre de la red (SSID):</label>
-            <input type="text" id="ssid" name="ssid" placeholder="MiRedWiFi" value="{{ ssid }}">
+            <input type="text" id="ssid" name="ssid" autocomplete="off"  placeholder="MiRedWiFi" value="{{ ssid }}">
 
 <!--            <label for="password">Contraseña de WiFi:</label>
             <input type="password" id="password" name="password" placeholder="Contraseña..." value="{{ password }}">
