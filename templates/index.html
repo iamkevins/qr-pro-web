@@ -138,6 +138,40 @@
             margin-top: 8px;
             word-break: break-all;
         }
+
+/* Estilos para el campo de contraseña con ojo */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 45px; /* Espacio para que el texto no tape el icono */
+}
+
+.btn-eye {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    transition: color 0.2s ease;
+}
+
+.btn-eye:hover {
+    color: #007bff;
+}
+
+
+
          @media (max-width: 600px) {
                body {
                   flex-direction: column;
