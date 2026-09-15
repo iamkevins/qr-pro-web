@@ -3,20 +3,21 @@ import os
 from io import BytesIO
 import cloudinary
 import cloudinary.uploader
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, session, url_for
 import qrcode
 
 app = Flask(__name__)
+# Necesario para manejar sesiones en Flask
+app.secret_key = os.environ.get("SECRET_KEY", "mi_clave_secreta_12345")
 
-# Configuración de Cloudinary (toma los valores de Render o usa los que coloques por defecto)
+# Configuración de Cloudinary
 cloudinary.config(
-    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "qvuwhflg"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY", "645633281489516"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "SYC17l57V2LSXcxCh2-bZcIGPe0"),
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "TU_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY", "TU_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "TU_API_SECRET"),
     secure=True,
 )
 
-# Extensiones permitidas para la subida de archivos
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "pdf"}
 
 
@@ -29,25 +30,16 @@ def archivo_permitido(filename):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    qr_base64 = None
-    modo_activo = "texto"
-    texto_url = ""
-    ssid = ""
-    password = ""
-    seguridad = "WPA"
-    archivo_url = None
-    error_msg = None
-
     if request.method == "POST":
         modo_activo = request.form.get("modo", "texto")
         contenido_qr = ""
+        error_msg = None
+        archivo_url = None
 
-        # Opción 1: Texto o URL
         if modo_activo == "texto":
             texto_url = request.form.get("texto_url", "").strip()
             contenido_qr = texto_url
 
-        # Opción 2: Conexión WiFi
         elif modo_activo == "wifi":
             ssid = request.form.get("ssid", "").strip()
             password = request.form.get("password", "").strip()
@@ -58,7 +50,6 @@ def index():
             else:
                 contenido_qr = f"WIFI:S:{ssid};T:{seguridad};P:{password};;"
 
-        # Opción 3: Foto / PDF (Cloudinary)
         elif modo_activo == "archivo":
             if "archivo" in request.files:
                 file = request.files["archivo"]
@@ -68,7 +59,6 @@ def index():
                     and archivo_permitido(file.filename)
                 ):
                     try:
-                        # Subir archivo directamente a Cloudinary
                         upload_result = cloudinary.uploader.upload(
                             file, resource_type="auto"
                         )
@@ -79,11 +69,12 @@ def index():
                             f"Error al subir el archivo a Cloudinary: {str(e)}"
                         )
                 else:
-                    error_msg = "Formato no permitido. Selecciona una imagen (PNG, JPG, GIF) o un archivo PDF."
+                    error_msg = "Formato no permitido. Selecciona una imagen (PNG, JPG, GIF) o un PDF."
             else:
                 error_msg = "No se ha seleccionado ningún archivo."
 
-        # Generar imagen QR si hay datos válidos
+        # Generar código QR
+        qr_base64 = None
         if contenido_qr:
             qr = qrcode.QRCode(
                 version=1,
@@ -98,17 +89,26 @@ def index():
 
             buffered = BytesIO()
             img.save(buffered, format="PNG")
-
             qr_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        # Guardar resultado en sesión temporal y REDIRIGIR (GET)
+        session["qr_code"] = qr_base64
+        session["modo_activo"] = modo_activo
+        session["archivo_url"] = archivo_url
+        session["error_msg"] = error_msg
+
+        return redirect(url_for("index"))
+
+    # Cuando es una petición GET (acceso normal o recargar)
+    qr_code = session.pop("qr_code", None)
+    modo_activo = session.pop("modo_activo", "texto")
+    archivo_url = session.pop("archivo_url", None)
+    error_msg = session.pop("error_msg", None)
 
     return render_template(
         "index.html",
-        qr_code=qr_base64,
+        qr_code=qr_code,
         modo_activo=modo_activo,
-        texto_url=texto_url,
-        ssid=ssid,
-        password=password,
-        seguridad=seguridad,
         archivo_url=archivo_url,
         error_msg=error_msg,
     )
