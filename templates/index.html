@@ -231,7 +231,7 @@ background-size: 100% 100%;
         <!-- Sección 1: Texto / URL -->
         <div id="grupo-texto" class="form-group {% if modo_activo == 'texto' %}active{% endif %}">
             <label for="texto_url">Texto o enlace URL:</label>
-            <input type="text" id="texto_url" name="texto_url" placeholder="https://ejemplo.com" value="{{ texto_url }}">
+            <input type="text" autocomplete="off"  id="texto_url" name="texto_url" placeholder="https://ejemplo.com" value="{{ texto_url }}">
         </div>
 
         <!-- Sección 2: WiFi -->
