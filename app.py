@@ -8,7 +8,7 @@ import qrcode
 
 app = Flask(__name__)
 
-# Configuración de Cloudinary (Usa tus credenciales o Variables de Entorno)
+# Configuración de Cloudinary (toma los valores de Render o usa los que coloques por defecto)
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "TU_CLOUD_NAME"),
     api_key=os.environ.get("CLOUDINARY_API_KEY", "TU_API_KEY"),
@@ -16,6 +16,7 @@ cloudinary.config(
     secure=True,
 )
 
+# Extensiones permitidas para la subida de archivos
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "pdf"}
 
 
@@ -41,10 +42,12 @@ def index():
         modo_activo = request.form.get("modo", "texto")
         contenido_qr = ""
 
+        # Opción 1: Texto o URL
         if modo_activo == "texto":
             texto_url = request.form.get("texto_url", "").strip()
             contenido_qr = texto_url
 
+        # Opción 2: Conexión WiFi
         elif modo_activo == "wifi":
             ssid = request.form.get("ssid", "").strip()
             password = request.form.get("password", "").strip()
@@ -55,27 +58,32 @@ def index():
             else:
                 contenido_qr = f"WIFI:S:{ssid};T:{seguridad};P:{password};;"
 
+        # Opción 3: Foto / PDF (Cloudinary)
         elif modo_activo == "archivo":
             if "archivo" in request.files:
                 file = request.files["archivo"]
-                if file and file.filename != "" and archivo_permitido(file.filename):
+                if (
+                    file
+                    and file.filename != ""
+                    and archivo_permitido(file.filename)
+                ):
                     try:
-                        # Subir archivo directamente a Cloudinary desde la memoria
-                        # 'resource_type="auto"' detecta automáticamente si es imagen o PDF
+                        # Subir archivo directamente a Cloudinary
                         upload_result = cloudinary.uploader.upload(
                             file, resource_type="auto"
                         )
-
-                        # URL pública permanente del archivo guardado en la nube
                         contenido_qr = upload_result.get("secure_url")
                         archivo_url = contenido_qr
-
                     except Exception as e:
-                        error_msg = f"Error al subir el archivo a la nube: {str(e)}"
+                        error_msg = (
+                            f"Error al subir el archivo a Cloudinary: {str(e)}"
+                        )
                 else:
-                    error_msg = "Formato de archivo no permitido. Sube una imagen o PDF."
+                    error_msg = "Formato no permitido. Selecciona una imagen (PNG, JPG, GIF) o un archivo PDF."
+            else:
+                error_msg = "No se ha seleccionado ningún archivo."
 
-        # Generar código QR si tenemos un contenido válido
+        # Generar imagen QR si hay datos válidos
         if contenido_qr:
             qr = qrcode.QRCode(
                 version=1,
