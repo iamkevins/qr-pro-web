@@ -12,9 +12,9 @@ app.secret_key = os.environ.get("SECRET_KEY", "mi_clave_secreta_12345")
 
 # Configuración de Cloudinary
 cloudinary.config(
-    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "TU_CLOUD_NAME"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY", "TU_API_KEY"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "TU_API_SECRET"),
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "qvuwhflg"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY", "645633281489516"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "SYC17l57V2LSXcxCh2-bZcIGPe0"),
     secure=True,
 )
 
