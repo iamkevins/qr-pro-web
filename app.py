@@ -8,11 +8,11 @@ import qrcode
 
 app = Flask(__name__)
 
-# Configuración de Cloudinary (toma los valores de Render o usa los que coloques por defecto)
+# Configuración de Cloudinary (toma las variables de entorno de Render o usa los valores por defecto)
 cloudinary.config(
-    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "qvuwhflg"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY", "645633281489516"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "SYC17l57V2LSXcxCh2-bZcIGPe0"),
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "TU_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY", "TU_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "TU_API_SECRET"),
     secure=True,
 )
 
@@ -68,12 +68,18 @@ def index():
                     and archivo_permitido(file.filename)
                 ):
                     try:
-                        # Subir archivo directamente a Cloudinary
+                        # Determinar si es PDF para usar 'raw' o 'image' / 'auto'
+                        # Esto evita el error 401 ACL failure al descargar o abrir el PDF
+                        es_pdf = file.filename.lower().endswith(".pdf")
+                        resource_type = "raw" if es_pdf else "auto"
+
                         upload_result = cloudinary.uploader.upload(
-                            file, resource_type="auto"
+                            file, resource_type=resource_type
                         )
+
                         contenido_qr = upload_result.get("secure_url")
                         archivo_url = contenido_qr
+
                     except Exception as e:
                         error_msg = (
                             f"Error al subir el archivo a Cloudinary: {str(e)}"
