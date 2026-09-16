@@ -172,8 +172,14 @@
         .btn-eye:hover {
             color: #007bff;
         }
-        
-
+        .select-edit {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding: 10px 40px 10px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+         }
 
          @media (max-width: 600px) {
                body {
@@ -250,7 +256,7 @@
 
 
             <label for="seguridad">Tipo de Seguridad:</label>
-            <select id="seguridad" name="seguridad">
+            <select class="select-edit" id="seguridad" name="seguridad">
                 <option value="WPA" {% if seguridad == 'WPA' %}selected{% endif %}>WPA / WPA2 / WPA3</option>
                 <option value="WEP" {% if seguridad == 'WEP' %}selected{% endif %}>WEP</option>
                 <option value="nopass" {% if seguridad == 'nopass' %}selected{% endif %}>Sin Contraseña</option>
