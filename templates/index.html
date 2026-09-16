@@ -14,19 +14,27 @@
             margin: 0;
             min-height: 100vh;
             width: 100%;
-             position: relative;
-  overflow-x: hidden;
-  background-color: #f02aa6;
+
+ min-height: 100vh;
+  width: 100%;
+  background-color: #f7d6bd; /* Color base cálido */
   background-image: 
-    radial-gradient(circle at 10% 10%, #ff7a00 0%, transparent 55%),
-    radial-gradient(circle at 95% 10%, #ff0055 0%, transparent 45%),
-    radial-gradient(circle at 10% 50%, #f02aa6 0%, transparent 50%),
-    radial-gradient(circle at 95% 75%, #00d2ff 0%, transparent 50%),
-    radial-gradient(circle at 15% 95%, #1d00c4 0%, transparent 55%),
-    radial-gradient(circle at 50% 80%, #7b00ff 0%, transparent 50%);
-  background-attachment: fixed;
+    /* Luz verde/menta central */
+    radial-gradient(circle at 48% 55%, rgba(162, 247, 218, 0.85) 0%, transparent 40%),
+    /* Fucsia/Rosa intenso (Inferior e izquierdo) */
+    radial-gradient(circle at 10% 75%, rgba(240, 20, 180, 0.9) 0%, transparent 50%),
+    /* Rojo/Rosa suave (Esquina superior izquierda) */
+    radial-gradient(circle at 15% 15%, rgba(255, 75, 110, 0.85) 0%, transparent 45%),
+    /* Amarillo/Naranja pastel (Zona superior/centro) */
+    radial-gradient(circle at 55% 15%, rgba(255, 215, 140, 0.9) 0%, transparent 50%),
+    /* Azul brillante (Esquina inferior derecha) */
+    radial-gradient(circle at 85% 75%, rgba(55, 150, 255, 0.9) 0%, transparent 50%),
+    /* Púrpura intenso (Esquina inferior izquierda) */
+    radial-gradient(circle at 5% 95%, rgba(120, 30, 235, 0.9) 0%, transparent 40%);
+  
   background-size: 100% 100%;
-    
+  background-repeat: no-repeat;
+             
         }
 body::before {
   content: "";
