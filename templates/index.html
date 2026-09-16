@@ -11,48 +11,35 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            
             margin: 0;
-           
-
-    min-height: 100vh;
-  width: 100%;
-  
- 
-  background-color: #f7d6bd; /* Color base cálido */
-  background-image: 
-    /* Luz verde/menta central */
-    radial-gradient(circle at 48% 55%, rgba(162, 247, 218, 0.85) 0%, transparent 40%),
-    /* Fucsia/Rosa intenso (Inferior e izquierdo) */
-    radial-gradient(circle at 10% 75%, rgba(240, 20, 180, 0.9) 0%, transparent 50%),
-    /* Rojo/Rosa suave (Esquina superior izquierda) */
-    radial-gradient(circle at 15% 15%, rgba(255, 75, 110, 0.85) 0%, transparent 45%),
-    /* Amarillo/Naranja pastel (Zona superior/centro) */
-    radial-gradient(circle at 55% 15%, rgba(255, 215, 140, 0.9) 0%, transparent 50%),
-    /* Azul brillante (Esquina inferior derecha) */
-    radial-gradient(circle at 85% 75%, rgba(55, 150, 255, 0.9) 0%, transparent 50%),
-    /* Púrpura intenso (Esquina inferior izquierda) */
-    radial-gradient(circle at 5% 95%, rgba(120, 30, 235, 0.9) 0%, transparent 40%);
-  
- 
-background-size: 100% 100%;
- background-repeat: no-repeat;
-}
-
-
-
-        
-        
+            min-height: 100vh;
+            width: 100%;
+            background-color: #f7d6bd; /* Color base cálido */
+            background-image: 
+            /* Luz verde/menta central */
+            radial-gradient(circle at 48% 55%, rgba(162, 247, 218, 0.85) 0%, transparent 40%),
+            /* Fucsia/Rosa intenso (Inferior e izquierdo) */
+            radial-gradient(circle at 10% 75%, rgba(240, 20, 180, 0.9) 0%, transparent 50%),
+            /* Rojo/Rosa suave (Esquina superior izquierda) */
+            radial-gradient(circle at 15% 15%, rgba(255, 75, 110, 0.85) 0%, transparent 45%),
+            /* Amarillo/Naranja pastel (Zona superior/centro) */
+            radial-gradient(circle at 55% 15%, rgba(255, 215, 140, 0.9) 0%, transparent 50%),
+            /* Azul brillante (Esquina inferior derecha) */
+            radial-gradient(circle at 85% 75%, rgba(55, 150, 255, 0.9) 0%, transparent 50%),
+            /* Púrpura intenso (Esquina inferior izquierda) */
+            radial-gradient(circle at 5% 95%, rgba(120, 30, 235, 0.9) 0%, transparent 40%);
+          
+           background-size: 100% 100%;
+           background-repeat: no-repeat;
+        }
 
 
 
         
         .container {
-            background: white;
-            
+            background: white;            
             padding: 30px;
             padding-top:0;
-            
             border-radius: 30px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -154,39 +141,38 @@ background-size: 100% 100%;
             margin-top: 8px;
             word-break: break-all;
         }
-
-/* Estilos para el campo de contraseña con ojo */
-.password-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.password-wrapper input {
-    width: 100%;
-    padding-right: 45px; /* Espacio para que el texto no tape el icono */
-}
-
-.btn-eye {
-    position: absolute;
-    right: 10px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #6c757d;
-    padding: 5px;
-    padding-boton:10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    outline: none;
-    transition: color 0.2s ease;
-}
-
-.btn-eye:hover {
-    color: #007bff;
-}
-
+        
+        /* Estilos para el campo de contraseña con ojo */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .password-wrapper input {
+            width: 100%;
+            padding-right: 45px; /* Espacio para que el texto no tape el icono */
+        }
+        
+        .btn-eye {
+            position: absolute;
+            right: 10px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #6c757d;
+            padding: 5px 0px 20px 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            outline: none;
+            transition: color 0.2s ease;
+        }
+        
+        .btn-eye:hover {
+            color: #007bff;
+        }
+        
 
 
          @media (max-width: 600px) {
