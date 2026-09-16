@@ -14,26 +14,43 @@
             margin: 0;
             min-height: 100vh;
             width: 100%;
-            background-color: #f7d6bd; /* Color base cálido */
-            background-image: 
-            /* Luz verde/menta central */
-            radial-gradient(circle at 48% 55%, rgba(162, 247, 218, 0.85) 0%, transparent 40%),
-            /* Fucsia/Rosa intenso (Inferior e izquierdo) */
-            radial-gradient(circle at 10% 75%, rgba(240, 20, 180, 0.9) 0%, transparent 50%),
-            /* Rojo/Rosa suave (Esquina superior izquierda) */
-            radial-gradient(circle at 15% 15%, rgba(255, 75, 110, 0.85) 0%, transparent 45%),
-            /* Amarillo/Naranja pastel (Zona superior/centro) */
-            radial-gradient(circle at 55% 15%, rgba(255, 215, 140, 0.9) 0%, transparent 50%),
-            /* Azul brillante (Esquina inferior derecha) */
-            radial-gradient(circle at 85% 75%, rgba(55, 150, 255, 0.9) 0%, transparent 50%),
-            /* Púrpura intenso (Esquina inferior izquierda) */
-            radial-gradient(circle at 5% 95%, rgba(120, 30, 235, 0.9) 0%, transparent 40%);
-          
-           background-size: 100% 100%;
-           background-repeat: no-repeat;
+            
+            position: relative;
+  overflow-x: hidden;
+  /* Fondo base claro */
+  background-color: #f7f9fb;
+  
+  /* Mezcla de colores con múltiples gradientes radiales */
+  background-image: 
+    /* Naranja superior izquierdo */
+    radial-gradient(circle at 15% 15%, #ff9e42 0%, transparent 45%),
+    /* Violeta/Morado superior derecho */
+    radial-gradient(circle at 80% 20%, #8257e5 0%, transparent 50%),
+    /* Rosa intenso en el borde izquierdo */
+    radial-gradient(circle at 5% 45%, #ff2a8d 0%, transparent 40%),
+    /* Celeste / Cian en el centro-derecho */
+    radial-gradient(circle at 85% 55%, #a2f0ed 0%, transparent 40%),
+    /* Amarillo inferior izquierdo */
+    radial-gradient(circle at 20% 85%, #ffea61 0%, transparent 45%),
+    /* Naranja cálido inferior derecho */
+    radial-gradient(circle at 75% 90%, #ff8331 0%, transparent 45%);
+  background-attachment: fixed;
+  background-size: 100% 100%;
         }
 
-
+/* Aplicamos un desenfoque general para mezclar perfectamente los gradientes */
+body::before {
+  content: "";
+  position: fixed;
+  top: -5%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
+  background: inherit;
+  filter: blur(40px); /* Ajusta este valor si quieres más o menos suavizado */
+  z-index: -1; /* Mantiene el fondo detrás de todo tu contenido */
+  pointer-events: none;
+}
 
         
         .container {
