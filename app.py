@@ -1,20 +1,15 @@
-import base64
 import os
-from io import BytesIO
 import cloudinary
 import cloudinary.uploader
-from flask import Flask, redirect, render_template, request, session, url_for
-import qrcode
+from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
-# Necesario para manejar sesiones en Flask
-app.secret_key = os.environ.get("SECRET_KEY", "mi_clave_secreta_12345")
 
 # Configuración de Cloudinary
 cloudinary.config(
-    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "qvuwhflg"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY", "645633281489516"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "SYC17l57V2LSXcxCh2-bZcIGPe0"),
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "TU_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY", "TU_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "TU_API_SECRET"),
     secure=True,
 )
 
@@ -28,89 +23,41 @@ def archivo_permitido(filename):
     )
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
-    if request.method == "POST":
-        modo_activo = request.form.get("modo", "texto")
-        contenido_qr = ""
-        error_msg = None
-        archivo_url = None
+    return render_template("index.html")
 
-        if modo_activo == "texto":
-            texto_url = request.form.get("texto_url", "").strip()
-            contenido_qr = texto_url
 
-        elif modo_activo == "wifi":
-            ssid = request.form.get("ssid", "").strip()
-            password = request.form.get("password", "").strip()
-            seguridad = request.form.get("seguridad", "WPA")
+@app.route("/upload", methods=["POST"])
+def upload_file():
+    if "archivo" not in request.files:
+        return jsonify({"error": "No se ha seleccionado ningún archivo."}), 400
 
-            if seguridad == "nopass":
-                contenido_qr = f"WIFI:S:{ssid};T:nopass;;"
-            else:
-                contenido_qr = f"WIFI:S:{ssid};T:{seguridad};P:{password};;"
+    file = request.files["archivo"]
+    if file.filename == "":
+        return jsonify({"error": "No se seleccionó ningún archivo."}), 400
 
-        elif modo_activo == "archivo":
-            if "archivo" in request.files:
-                file = request.files["archivo"]
-                if (
-                    file
-                    and file.filename != ""
-                    and archivo_permitido(file.filename)
-                ):
-                    try:
-                        upload_result = cloudinary.uploader.upload(
-                            file, resource_type="auto"
-                        )
-                        contenido_qr = upload_result.get("secure_url")
-                        archivo_url = contenido_qr
-                    except Exception as e:
-                        error_msg = (
-                            f"Error al subir el archivo a Cloudinary: {str(e)}"
-                        )
-                else:
-                    error_msg = "Formato no permitido. Selecciona una imagen (PNG, JPG, GIF) o un PDF."
-            else:
-                error_msg = "No se ha seleccionado ningún archivo."
-
-        # Generar código QR
-        qr_base64 = None
-        if contenido_qr:
-            qr = qrcode.QRCode(
-                version=1,
-                error_correction=qrcode.constants.ERROR_CORRECT_L,
-                box_size=10,
-                border=4,
+    if file and archivo_permitido(file.filename):
+        try:
+            upload_result = cloudinary.uploader.upload(
+                file, resource_type="auto"
             )
-            qr.add_data(contenido_qr)
-            qr.make(fit=True)
+            return jsonify({"url": upload_result.get("secure_url")})
+        except Exception as e:
+            return (
+                jsonify(
+                    {"error": f"Error al subir archivo a Cloudinary: {str(e)}"}
+                ),
+                500,
+            )
 
-            img = qr.make_image(fill_color="black", back_color="white")
-
-            buffered = BytesIO()
-            img.save(buffered, format="PNG")
-            qr_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-        # Guardar resultado en sesión temporal y REDIRIGIR (GET)
-        session["qr_code"] = qr_base64
-        session["modo_activo"] = modo_activo
-        session["archivo_url"] = archivo_url
-        session["error_msg"] = error_msg
-
-        return redirect(url_for("index"))
-
-    # Cuando es una petición GET (acceso normal o recargar)
-    qr_code = session.pop("qr_code", None)
-    modo_activo = session.pop("modo_activo", "texto")
-    archivo_url = session.pop("archivo_url", None)
-    error_msg = session.pop("error_msg", None)
-
-    return render_template(
-        "index.html",
-        qr_code=qr_code,
-        modo_activo=modo_activo,
-        archivo_url=archivo_url,
-        error_msg=error_msg,
+    return (
+        jsonify(
+            {
+                "error": "Formato no permitido. Selecciona una imagen (PNG, JPG, GIF) o un PDF."
+            }
+        ),
+        400,
     )
 
 
