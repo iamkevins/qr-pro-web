@@ -249,16 +249,21 @@
         renderizarQR(contenido);
     }
 
-    function renderizarQR(texto) {
+        function renderizarQR(texto) {
         const colorQR = document.getElementById('color_qr').value;
         const colorFondo = document.getElementById('color_fondo').value;
         const dotsStyle = document.getElementById('dots_style').value;
 
+        // Detecta la densidad de píxeles nativa de la pantalla del usuario (1x, 2x, 3x)
+        const dpr = window.devicePixelRatio || 2;
+        const baseSize = 250; // Tamaño visual base ideal para la interfaz
+
         document.getElementById('qrcode-container').innerHTML = "";
 
+        // Generamos el lienzo ajustado a la resolución nativa exacta de la pantalla
         qrCode = new QRCodeStyling({
-            width: 1000,
-            height: 1000,
+            width: baseSize * dpr,
+            height: baseSize * dpr,
             type: "canvas",
             data: texto,
             dotsOptions: {
@@ -274,11 +279,25 @@
         document.getElementById('qr-result').style.display = 'block';
     }
 
+    // Función de descarga optimizada para exportar a alta calidad (1000x1000 px) al guardar
     function descargarQR() {
         if (qrCode) {
-            qrCode.download({ name: "codigo_qr", extension: "png" });
+            // Actualiza la escala temporalmente para exportar una imagen nítida de 1000px al disco
+            qrCode.update({
+                width: 1000,
+                height: 1000
+            });
+            qrCode.download({ name: "codigo_qr_hd", extension: "png" });
+
+            // Restaura la escala visual original adecuada para la pantalla
+            const dpr = window.devicePixelRatio || 2;
+            qrCode.update({
+                width: 250 * dpr,
+                height: 250 * dpr
+            });
         }
     }
+
 
     function copiarContenido() {
         if (ultimoContenido) {
