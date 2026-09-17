@@ -39,14 +39,16 @@ def upload_file():
 
     if file and archivo_permitido(file.filename):
         try:
-            # Detectar si es PDF para usar resource_type apropiado
-            es_pdf = file.filename.lower().endswith(".pdf")
-            resource_type = "raw" if es_pdf else "auto"
-
+            # Subida directa permitiendo que Cloudinary identifique el tipo de recurso
             upload_result = cloudinary.uploader.upload(
-                file, resource_type=resource_type
+                file,
+                resource_type="auto",
+                flags="attachment:false" # Permite visualizar el PDF en navegador al escanear
             )
-            return jsonify({"url": upload_result.get("secure_url")})
+            
+            url_final = upload_result.get("secure_url")
+            return jsonify({"url": url_final})
+            
         except Exception as e:
             return (
                 jsonify(
