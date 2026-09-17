@@ -209,17 +209,19 @@ input:focus, select:focus {
     justify-content: center;
     margin: 15px auto;
     width: 100%;
-    max-width: 260px; /*tamaño maximo adatpativo*/
+    max-width: 260px; /* Tamaño máximo adaptativo */
 }
 
-#qrcode-container canvas, #qrcode-container img {
-    padding: 100% !important; /*se adapta al 100% del contenedor en porcentajes*/
-    height: auto !important; /*preserva la proporcion cuadrada */
-    padding:10px;
+#qrcode-container canvas, 
+#qrcode-container img {
+    width: 100% !important;  /* Se adapta al 100% del contenedor en porcentaje */
+    height: auto !important; /* Preserva la proporción cuadrada */
+    padding: 10px;
     background: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
+
 
 .error-msg {
     background-color: #fef2f2;
