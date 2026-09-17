@@ -39,20 +39,32 @@ def upload_file():
 
     if file and archivo_permitido(file.filename):
         try:
-            # Subida directa permitiendo que Cloudinary identifique el tipo de recurso
-            upload_result = cloudinary.uploader.upload(
-                file,
-                resource_type="auto",
-                flags="attachment:false" # Permite visualizar el PDF en navegador al escanear
-            )
-            
+            nombre_archivo = file.filename
+            es_pdf = nombre_archivo.lower().endswith(".pdf")
+
+            if es_pdf:
+                # Los PDFs se suben como 'raw' asegurando que conserven la extensión .pdf
+                upload_result = cloudinary.uploader.upload(
+                    file,
+                    resource_type="raw",
+                    use_filename=True,
+                    unique_filename=True,
+                    format="pdf"
+                )
+            else:
+                # Las imágenes (PNG, JPG, GIF) siguen usando 'image'
+                upload_result = cloudinary.uploader.upload(
+                    file,
+                    resource_type="image"
+                )
+
             url_final = upload_result.get("secure_url")
             return jsonify({"url": url_final})
-            
+
         except Exception as e:
             return (
                 jsonify(
-                    {"error": f"Error al subir archivo a Cloudinary: {str(e)}"}
+                    {"error": f"Error al procesar el archivo: {str(e)}"}
                 ),
                 500,
             )
@@ -60,7 +72,7 @@ def upload_file():
     return (
         jsonify(
             {
-                "error": "Formato no permitido. Selecciona una imagen (PNG, JPG, GIF) o un PDF."
+                "error": "Formato no permitido. Selecciona una imagen (PNG, JPG, GIF) or un PDF."
             }
         ),
         400,
