@@ -204,7 +204,7 @@
             const seg = document.getElementById('seguridad').value;
             if (!ssid) return mostrarError("Debes ingresar el nombre de la red WiFi.");
             contenido = seg === 'nopass' ? `WIFI:S:${ssid};T:nopass;;` : `WIFI:S:${ssid};T:${seg};P:${pass};;`;
-        } else if (modo === 'vcard') {
+                } else if (modo === 'vcard') {
             const nom = document.getElementById('vcard_nombre').value.trim();
             const ape = document.getElementById('vcard_apellido').value.trim();
             const tel = document.getElementById('vcard_tel').value.trim();
@@ -214,8 +214,10 @@
             if (!nom && !ape) return mostrarError("Ingresa al menos el nombre o el apellido del contacto.");
             
             const nombreCompleto = `${nom} ${ape}`.trim();
+            // Formato vCard 3.0 estándar: N:Apellido;Nombre;;; y FN:Nombre Completo
             contenido = `BEGIN:VCARD\nVERSION:3.0\nN:${ape};${nom};;;\nFN:${nombreCompleto}\nTEL:${tel}\nEMAIL:${email}\nORG:${emp}\nEND:VCARD`;
-        } else if (modo === 'maps') {
+        }
+ else if (modo === 'maps') {
             contenido = document.getElementById('maps_url').value.trim();
             if (!contenido) return mostrarError("Ingresa un enlace o coordenadas de Google Maps.");
         } else if (modo === 'archivo') {
