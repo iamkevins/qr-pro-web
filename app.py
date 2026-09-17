@@ -7,9 +7,9 @@ app = Flask(__name__)
 
 # Configuración de Cloudinary
 cloudinary.config(
-    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "qvuwhflg"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY", "645633281489516"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "SYC17l57V2LSXcxCh2-bZcIGPe0"),
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "TU_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY", "TU_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET", "TU_API_SECRET"),
     secure=True,
 )
 
@@ -39,8 +39,12 @@ def upload_file():
 
     if file and archivo_permitido(file.filename):
         try:
+            # Detectar si es PDF para usar resource_type apropiado
+            es_pdf = file.filename.lower().endswith(".pdf")
+            resource_type = "raw" if es_pdf else "auto"
+
             upload_result = cloudinary.uploader.upload(
-                file, resource_type="auto"
+                file, resource_type=resource_type
             )
             return jsonify({"url": upload_result.get("secure_url")})
         except Exception as e:
