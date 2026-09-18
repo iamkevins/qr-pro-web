@@ -154,13 +154,6 @@
         <button type="button" class="btn btn-download" onclick="descargarQR()">Descargar Imagen PNG</button>
         <button type="button" class="btn btn-copy" onclick="copiarContenido()">Copiar Enlace/Contenido</button>
     </div>
-
-    <!-- Historial Local -->
-    <div class="history-section">
-        <h3>Historial Reciente</h3>
-        <ul id="history-list"></ul>
-        <button type="button" class="btn-clear-history" onclick="limpiarHistorial()">Borrar Historial</button>
-    </div>
 </div>
 
 <script>
@@ -169,7 +162,6 @@
     let logoDataUrl = "";
 
     document.addEventListener("DOMContentLoaded", () => {
-        cargarHistorial();
         document.getElementById('logo_file').addEventListener('change', procesarLogo);
     });
 
@@ -267,7 +259,6 @@
         if (!contenido) return mostrarError("Completa los campos requeridos.");
 
         ultimoContenido = contenido;
-        guardarEnHistorial(contenido);
         renderizarQR(contenido);
     }
 
@@ -325,37 +316,6 @@
             navigator.clipboard.writeText(ultimoContenido);
             alert("Contenido copiado al portapapeles!");
         }
-    }
-
-    /* Manejo de Historial Local */
-    function guardarEnHistorial(item) {
-        let historial = JSON.parse(localStorage.getItem('qr_history') || '[]');
-        if (!historial.includes(item)) {
-            historial.unshift(item);
-            if (historial.length > 5) historial.pop();
-            localStorage.setItem('qr_history', JSON.stringify(historial));
-            cargarHistorial();
-        }
-    }
-
-    function cargarHistorial() {
-        const historial = JSON.parse(localStorage.getItem('qr_history') || '[]');
-        const list = document.getElementById('history-list');
-        list.innerHTML = "";
-        historial.forEach(elem => {
-            const li = document.createElement('li');
-            li.innerText = elem.length > 40 ? elem.substring(0, 37) + '...' : elem;
-            li.onclick = () => {
-                ultimoContenido = elem;
-                renderizarQR(elem);
-            };
-            list.appendChild(li);
-        });
-    }
-
-    function limpiarHistorial() {
-        localStorage.removeItem('qr_history');
-        cargarHistorial();
     }
 </script>
 
