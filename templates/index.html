@@ -114,10 +114,6 @@
                     <label for="color_fondo" style="font-size: 12px;">Fondo</label>
                     <input type="color" id="color_fondo" value="#ffffff">
                 </div>
-                <div class="color-item">
-                    <label for="color_esquinas" style="font-size: 12px;">Color Ojos</label>
-                    <input type="color" id="color_esquinas" value="#000000">
-                </div>
             </div>
 
             <div class="grid-2-col">
@@ -178,7 +174,6 @@
     function aplicarPaleta(qrColor, bgColor) {
         document.getElementById('color_qr').value = qrColor;
         document.getElementById('color_fondo').value = bgColor;
-        document.getElementById('color_esquinas').value = qrColor;
     }
 
     function procesarLogo(event) {
@@ -265,7 +260,6 @@
     function renderizarQR(texto) {
         const colorQR = document.getElementById('color_qr').value;
         const colorFondo = document.getElementById('color_fondo').value;
-        const colorEsquinas = document.getElementById('color_esquinas').value;
         const dotsStyle = document.getElementById('dots_style').value;
         const cornersStyle = document.getElementById('corners_style').value;
 
@@ -290,7 +284,7 @@
                 type: dotsStyle
             },
             cornersSquareOptions: {
-                color: colorEsquinas,
+                color: colorQR,
                 type: cornersStyle
             },
             backgroundOptions: {
