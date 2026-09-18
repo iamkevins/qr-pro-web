@@ -254,6 +254,92 @@ input:focus, select:focus {
     border: 1px solid #fecaca;
     display: none;
 }
+/* Paletas Rápidas & Opciones Avanzadas */
+.preset-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.btn-preset {
+    flex: 1;
+    padding: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-preset:hover {
+    background: #f1f5f9;
+}
+
+.grid-2-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.highlight-tab {
+    color: #059669 !important;
+}
+
+.scan-result-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    word-break: break-all;
+}
+
+/* Historial Local */
+.history-section {
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.history-section h3 {
+    font-size: 14px;
+    color: #475569;
+    margin-bottom: 10px;
+}
+
+#history-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+#history-list li {
+    padding: 8px 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#history-list li:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.btn-clear-history {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+}
 
 
 @media (max-width: 700px) {
