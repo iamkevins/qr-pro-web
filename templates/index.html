@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Código QR Profesional</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
-    <!-- Librerías JS: QR Styling + Lector de QR -->
+    <!-- Librería JS: QR Styling -->
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </head>
 <body>
 
@@ -20,23 +19,9 @@
         <button type="button" class="tab-btn" onclick="cambiarTab('vcard')">Contacto</button>
         <button type="button" class="tab-btn" onclick="cambiarTab('maps')">Ubicación</button>
         <button type="button" class="tab-btn" onclick="cambiarTab('archivo')">Foto / PDF</button>
-        <button type="button" class="tab-btn highlight-tab" onclick="cambiarTab('escanear')">📷 Escanear QR</button>
     </div>
 
     <div id="error-box" class="error-msg"></div>
-
-    <!-- Módulo Escáner de QR -->
-    <div id="tab-escanear" class="tab-content">
-        <div class="input-group">
-            <label for="qr-file-input">Subir imagen con código QR:</label>
-            <input type="file" id="qr-file-input" accept="image/*" onchange="escanearImagenQR(event)">
-        </div>
-        <div id="scan-result" class="scan-result-box" style="display: none;">
-            <strong>Resultado del escáner:</strong>
-            <p id="scan-text"></p>
-            <button type="button" class="btn btn-copy" onclick="copiarEscaneo()">Copiar Resultado</button>
-        </div>
-    </div>
 
     <form id="qr-form" onsubmit="generarQR(event)" autocomplete="off">
         <input type="hidden" id="modo" value="texto">
@@ -109,7 +94,7 @@
             </div>
         </div>
 
-        <!-- Opciones Visuales Avanzadas (Opción 1) -->
+        <!-- Personalización Visual Avanzada -->
         <div class="custom-section">
             <label>Personalización Visual Avanzada:</label>
             
@@ -170,7 +155,7 @@
         <button type="button" class="btn btn-copy" onclick="copiarContenido()">Copiar Enlace/Contenido</button>
     </div>
 
-    <!-- Historial Local (Opción 4) -->
+    <!-- Historial Local -->
     <div class="history-section">
         <h3>Historial Reciente</h3>
         <ul id="history-list"></ul>
@@ -195,9 +180,6 @@
 
         event.target.classList.add('active');
         document.getElementById('tab-' + modo).classList.add('active');
-        
-        const form = document.getElementById('qr-form');
-        form.style.display = (modo === 'escanear') ? 'none' : 'block';
         ocultarError();
     }
 
@@ -345,49 +327,7 @@
         }
     }
 
-    /* Lector de QR (Opción 4) */
-    function escanearImagenQR(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-                const resBox = document.getElementById('scan-result');
-                const resText = document.getElementById('scan-text');
-
-                if (code) {
-                    resText.innerText = code.data;
-                    resBox.style.display = 'block';
-                } else {
-                    mostrarError("No se encontró un código QR válido en la imagen.");
-                    resBox.style.display = 'none';
-                }
-            };
-            img.src = evt.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function copiarEscaneo() {
-        const txt = document.getElementById('scan-text').innerText;
-        if (txt) {
-            navigator.clipboard.writeText(txt);
-            alert("Texto escaneado copiado!");
-        }
-    }
-
-    /* Manejo de Historial (Opción 4) */
+    /* Manejo de Historial Local */
     function guardarEnHistorial(item) {
         let historial = JSON.parse(localStorage.getItem('qr_history') || '[]');
         if (!historial.includes(item)) {
