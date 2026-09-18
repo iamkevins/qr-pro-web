@@ -5,29 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Código QR Profesional</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
-    <!-- Librería para generación instantánea de QR con personalización visual -->
+    <!-- Librerías JS: QR Styling + Lector de QR -->
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </head>
 <body>
 
 <div class="container">
     <h1>Generador de Código QR</h1>
 
-    <!-- Pestañas de Modos -->
     <div class="tabs">
         <button type="button" class="tab-btn active" onclick="cambiarTab('texto')">Texto / URL</button>
         <button type="button" class="tab-btn" onclick="cambiarTab('wifi')">WiFi</button>
         <button type="button" class="tab-btn" onclick="cambiarTab('vcard')">Contacto</button>
         <button type="button" class="tab-btn" onclick="cambiarTab('maps')">Ubicación</button>
         <button type="button" class="tab-btn" onclick="cambiarTab('archivo')">Foto / PDF</button>
+        <button type="button" class="tab-btn highlight-tab" onclick="cambiarTab('escanear')">📷 Escanear QR</button>
     </div>
 
     <div id="error-box" class="error-msg"></div>
 
+    <!-- Módulo Escáner de QR -->
+    <div id="tab-escanear" class="tab-content">
+        <div class="input-group">
+            <label for="qr-file-input">Subir imagen con código QR:</label>
+            <input type="file" id="qr-file-input" accept="image/*" onchange="escanearImagenQR(event)">
+        </div>
+        <div id="scan-result" class="scan-result-box" style="display: none;">
+            <strong>Resultado del escáner:</strong>
+            <p id="scan-text"></p>
+            <button type="button" class="btn btn-copy" onclick="copiarEscaneo()">Copiar Resultado</button>
+        </div>
+    </div>
+
     <form id="qr-form" onsubmit="generarQR(event)" autocomplete="off">
         <input type="hidden" id="modo" value="texto">
 
-        <!-- 1. Texto / URL -->
         <div id="tab-texto" class="tab-content active">
             <div class="input-group">
                 <label for="texto_url">Texto o Enlace URL:</label>
@@ -35,7 +48,6 @@
             </div>
         </div>
 
-        <!-- 2. WiFi -->
         <div id="tab-wifi" class="tab-content">
             <div class="input-group">
                 <label for="ssid">Nombre de la red (SSID):</label>
@@ -46,10 +58,7 @@
                 <div class="password-wrapper">
                     <input type="password" id="password" autocomplete="new-password" placeholder="Contraseña de la red">
                     <button type="button" id="togglePassword" class="btn-eye" aria-label="Mostrar/Ocultar contraseña">
-                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>
                 </div>
             </div>
@@ -63,8 +72,6 @@
             </div>
         </div>
 
-  
-        <!-- 3. Contacto (vCard) -->
         <div id="tab-vcard" class="tab-content">
             <div class="input-group">
                 <label for="vcard_nombre">Nombre:</label>
@@ -88,10 +95,6 @@
             </div>
         </div>
 
-
-
-
-        <!-- 4. Ubicación (Maps) -->
         <div id="tab-maps" class="tab-content">
             <div class="input-group">
                 <label for="maps_url">Enlace o Coordenadas de Google Maps:</label>
@@ -99,7 +102,6 @@
             </div>
         </div>
 
-        <!-- 5. Archivo (Cloudinary) -->
         <div id="tab-archivo" class="tab-content">
             <div class="input-group">
                 <label for="archivo">Seleccionar Foto o PDF:</label>
@@ -107,9 +109,17 @@
             </div>
         </div>
 
-        <!-- Sección Opciones Visuales -->
+        <!-- Opciones Visuales Avanzadas (Opción 1) -->
         <div class="custom-section">
-            <label>Personalizar Aspecto del QR:</label>
+            <label>Personalización Visual Avanzada:</label>
+            
+            <div class="preset-buttons">
+                <button type="button" class="btn-preset" onclick="aplicarPaleta('#000000', '#ffffff')">Clásico</button>
+                <button type="button" class="btn-preset" onclick="aplicarPaleta('#1e40af', '#eff6ff')">Azul Tech</button>
+                <button type="button" class="btn-preset" onclick="aplicarPaleta('#065f46', '#ecfdf5')">Verde Menta</button>
+                <button type="button" class="btn-preset" onclick="aplicarPaleta('#831843', '#fdf2f8')">Elegante</button>
+            </div>
+
             <div class="color-pickers">
                 <div class="color-item">
                     <label for="color_qr" style="font-size: 12px;">Color QR</label>
@@ -119,32 +129,64 @@
                     <label for="color_fondo" style="font-size: 12px;">Fondo</label>
                     <input type="color" id="color_fondo" value="#ffffff">
                 </div>
+                <div class="color-item">
+                    <label for="color_esquinas" style="font-size: 12px;">Color Ojos</label>
+                    <input type="color" id="color_esquinas" value="#000000">
+                </div>
             </div>
+
+            <div class="grid-2-col">
+                <div class="input-group" style="margin-bottom: 0;">
+                    <label for="dots_style" style="font-size: 12px;">Forma de Puntos:</label>
+                    <select id="dots_style">
+                        <option value="square">Cuadrados</option>
+                        <option value="dots">Puntos Redondos</option>
+                        <option value="rounded">Bordes Suaves</option>
+                    </select>
+                </div>
+                <div class="input-group" style="margin-bottom: 0;">
+                    <label for="corners_style" style="font-size: 12px;">Forma de Ojos:</label>
+                    <select id="corners_style">
+                        <option value="square">Cuadrado</option>
+                        <option value="dot">Circular</option>
+                        <option value="extra-rounded">Redondeado</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="input-group" style="margin-top: 10px; margin-bottom: 0;">
-                <label for="dots_style" style="font-size: 12px;">Estilo de Puntos:</label>
-                <select id="dots_style">
-                    <option value="square">Cuadrados Clásicos</option>
-                    <option value="dots">Puntos Redondos</option>
-                    <option value="rounded">Bordes Suaves</option>
-                </select>
+                <label for="logo_file" style="font-size: 12px;">Logo Central (Opcional):</label>
+                <input type="file" id="logo_file" accept="image/*" style="font-size: 12px; padding: 6px;">
             </div>
         </div>
 
         <button type="submit" id="btn-submit" class="btn btn-primary">Generar QR Instantáneo</button>
     </form>
 
-    <!-- Resultado -->
     <div id="qr-result" class="qr-result">
         <h3>Tu Código QR:</h3>
         <div id="qrcode-container"></div>
         <button type="button" class="btn btn-download" onclick="descargarQR()">Descargar Imagen PNG</button>
         <button type="button" class="btn btn-copy" onclick="copiarContenido()">Copiar Enlace/Contenido</button>
     </div>
+
+    <!-- Historial Local (Opción 4) -->
+    <div class="history-section">
+        <h3>Historial Reciente</h3>
+        <ul id="history-list"></ul>
+        <button type="button" class="btn-clear-history" onclick="limpiarHistorial()">Borrar Historial</button>
+    </div>
 </div>
 
 <script>
     let qrCode = null;
     let ultimoContenido = "";
+    let logoDataUrl = "";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        cargarHistorial();
+        document.getElementById('logo_file').addEventListener('change', procesarLogo);
+    });
 
     function cambiarTab(modo) {
         document.getElementById('modo').value = modo;
@@ -153,30 +195,34 @@
 
         event.target.classList.add('active');
         document.getElementById('tab-' + modo).classList.add('active');
+        
+        const form = document.getElementById('qr-form');
+        form.style.display = (modo === 'escanear') ? 'none' : 'block';
         ocultarError();
     }
 
-    // Alternar visibilidad de contraseña
+    function aplicarPaleta(qrColor, bgColor) {
+        document.getElementById('color_qr').value = qrColor;
+        document.getElementById('color_fondo').value = bgColor;
+        document.getElementById('color_esquinas').value = qrColor;
+    }
+
+    function procesarLogo(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) { logoDataUrl = e.target.result; };
+            reader.readAsDataURL(file);
+        } else {
+            logoDataUrl = "";
+        }
+    }
+
     document.getElementById('togglePassword').addEventListener('click', function () {
         const pass = document.getElementById('password');
-        const eyeIcon = document.getElementById('eyeIcon');
         const isPass = pass.getAttribute('type') === 'password';
-        
         pass.setAttribute('type', isPass ? 'text' : 'password');
-        
-        if (isPass) {
-            eyeIcon.innerHTML = `
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-            `;
-            this.style.color = "#2563eb";
-        } else {
-            eyeIcon.innerHTML = `
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                <line x1="1" y1="1" x2="23" y2="23"></line>
-            `;
-            this.style.color = "#64748b";
-        }
+        this.style.color = isPass ? "#2563eb" : "#64748b";
     });
 
     function mostrarError(msg) {
@@ -204,29 +250,23 @@
             const seg = document.getElementById('seguridad').value;
             if (!ssid) return mostrarError("Debes ingresar el nombre de la red WiFi.");
             contenido = seg === 'nopass' ? `WIFI:S:${ssid};T:nopass;;` : `WIFI:S:${ssid};T:${seg};P:${pass};;`;
-                } else if (modo === 'vcard') {
+        } else if (modo === 'vcard') {
             const nom = document.getElementById('vcard_nombre').value.trim();
             const ape = document.getElementById('vcard_apellido').value.trim();
             const tel = document.getElementById('vcard_tel').value.trim();
             const email = document.getElementById('vcard_email').value.trim();
             const emp = document.getElementById('vcard_empresa').value.trim();
-            
-            if (!nom && !ape) return mostrarError("Ingresa al menos el nombre o el apellido del contacto.");
-            
+            if (!nom && !ape) return mostrarError("Ingresa al menos el nombre o el apellido.");
             const nombreCompleto = `${nom} ${ape}`.trim();
-            // Formato vCard 3.0 estándar: N:Apellido;Nombre;;; y FN:Nombre Completo
             contenido = `BEGIN:VCARD\nVERSION:3.0\nN:${ape};${nom};;;\nFN:${nombreCompleto}\nTEL:${tel}\nEMAIL:${email}\nORG:${emp}\nEND:VCARD`;
-        }
- else if (modo === 'maps') {
+        } else if (modo === 'maps') {
             contenido = document.getElementById('maps_url').value.trim();
-            if (!contenido) return mostrarError("Ingresa un enlace o coordenadas de Google Maps.");
+            if (!contenido) return mostrarError("Ingresa un enlace o coordenadas.");
         } else if (modo === 'archivo') {
             const fileInput = document.getElementById('archivo');
-            if (!fileInput.files.length) return mostrarError("Selecciona una foto o archivo PDF.");
-
+            if (!fileInput.files.length) return mostrarError("Selecciona una foto o PDF.");
             const formData = new FormData();
             formData.append('archivo', fileInput.files[0]);
-
             const btnSubmit = document.getElementById('btn-submit');
             btnSubmit.innerText = "Subiendo archivo...";
 
@@ -234,41 +274,51 @@
                 const response = await fetch('/upload', { method: 'POST', body: formData });
                 const result = await response.json();
                 btnSubmit.innerText = "Generar QR Instantáneo";
-
                 if (!response.ok) return mostrarError(result.error);
                 contenido = result.url;
             } catch (err) {
                 btnSubmit.innerText = "Generar QR Instantáneo";
-                return mostrarError("Error de conexión al subir el archivo.");
+                return mostrarError("Error de conexión al subir archivo.");
             }
         }
 
-        if (!contenido) return mostrarError("Por favor completa los campos requeridos.");
+        if (!contenido) return mostrarError("Completa los campos requeridos.");
 
         ultimoContenido = contenido;
+        guardarEnHistorial(contenido);
         renderizarQR(contenido);
     }
 
-        function renderizarQR(texto) {
+    function renderizarQR(texto) {
         const colorQR = document.getElementById('color_qr').value;
         const colorFondo = document.getElementById('color_fondo').value;
+        const colorEsquinas = document.getElementById('color_esquinas').value;
         const dotsStyle = document.getElementById('dots_style').value;
+        const cornersStyle = document.getElementById('corners_style').value;
 
-        // Detecta la densidad de píxeles nativa de la pantalla del usuario (1x, 2x, 3x)
         const dpr = window.devicePixelRatio || 2;
-        const baseSize = 250; // Tamaño visual base ideal para la interfaz
+        const baseSize = 250;
 
         document.getElementById('qrcode-container').innerHTML = "";
 
-        // Generamos el lienzo ajustado a la resolución nativa exacta de la pantalla
         qrCode = new QRCodeStyling({
             width: baseSize * dpr,
             height: baseSize * dpr,
             type: "canvas",
             data: texto,
+            image: logoDataUrl || undefined,
+            imageOptions: {
+                crossOrigin: "anonymous",
+                margin: 5,
+                imageSize: 0.25
+            },
             dotsOptions: {
                 color: colorQR,
                 type: dotsStyle
+            },
+            cornersSquareOptions: {
+                color: colorEsquinas,
+                type: cornersStyle
             },
             backgroundOptions: {
                 color: colorFondo,
@@ -279,31 +329,93 @@
         document.getElementById('qr-result').style.display = 'block';
     }
 
-    // Función de descarga optimizada para exportar a alta calidad (1000x1000 px) al guardar
     function descargarQR() {
         if (qrCode) {
-            // Actualiza la escala temporalmente para exportar una imagen nítida de 1000px al disco
-            qrCode.update({
-                width: 1000,
-                height: 1000
-            });
+            qrCode.update({ width: 1000, height: 1000 });
             qrCode.download({ name: "codigo_qr_hd", extension: "png" });
-
-            // Restaura la escala visual original adecuada para la pantalla
             const dpr = window.devicePixelRatio || 2;
-            qrCode.update({
-                width: 250 * dpr,
-                height: 250 * dpr
-            });
+            qrCode.update({ width: 250 * dpr, height: 250 * dpr });
         }
     }
-
 
     function copiarContenido() {
         if (ultimoContenido) {
             navigator.clipboard.writeText(ultimoContenido);
-            alert("Contenido/Enlace copiado al portapapeles!");
+            alert("Contenido copiado al portapapeles!");
         }
+    }
+
+    /* Lector de QR (Opción 4) */
+    function escanearImagenQR(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                const resBox = document.getElementById('scan-result');
+                const resText = document.getElementById('scan-text');
+
+                if (code) {
+                    resText.innerText = code.data;
+                    resBox.style.display = 'block';
+                } else {
+                    mostrarError("No se encontró un código QR válido en la imagen.");
+                    resBox.style.display = 'none';
+                }
+            };
+            img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function copiarEscaneo() {
+        const txt = document.getElementById('scan-text').innerText;
+        if (txt) {
+            navigator.clipboard.writeText(txt);
+            alert("Texto escaneado copiado!");
+        }
+    }
+
+    /* Manejo de Historial (Opción 4) */
+    function guardarEnHistorial(item) {
+        let historial = JSON.parse(localStorage.getItem('qr_history') || '[]');
+        if (!historial.includes(item)) {
+            historial.unshift(item);
+            if (historial.length > 5) historial.pop();
+            localStorage.setItem('qr_history', JSON.stringify(historial));
+            cargarHistorial();
+        }
+    }
+
+    function cargarHistorial() {
+        const historial = JSON.parse(localStorage.getItem('qr_history') || '[]');
+        const list = document.getElementById('history-list');
+        list.innerHTML = "";
+        historial.forEach(elem => {
+            const li = document.createElement('li');
+            li.innerText = elem.length > 40 ? elem.substring(0, 37) + '...' : elem;
+            li.onclick = () => {
+                ultimoContenido = elem;
+                renderizarQR(elem);
+            };
+            list.appendChild(li);
+        });
+    }
+
+    function limpiarHistorial() {
+        localStorage.removeItem('qr_history');
+        cargarHistorial();
     }
 </script>
 
